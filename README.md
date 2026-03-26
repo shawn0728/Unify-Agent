@@ -64,3 +64,23 @@ Given an input prompt, our framework first performs prompt understanding and cog
 Starting from long-tail IP collection, we construct user instructions and Ground Truth images, build multimodal research trajectories with textual and visual evidence, and finally perform evidence-grounded recaption annotation to obtain high-quality training samples. The resulting dataset supports both SFT trajectory learning and the FactIP benchmark, which evaluates generation quality in terms of clarity, content, aesthetics, and relevance.
 
 ![dataset](./images/dataset.png)
+
+
+---
+
+## 🏝️ Reasoning Example
+
+1. Image generated for the prompt: **"The copper is burning, highlighting the color".**
+
+![reasoning_example1](./images/case_1.png)
+
+
+2. Image generated for **Grigory Perelman** scribbling mathematical equations.
+
+![reasoning_example2](./images/case_2.png)
+
+---
+
+## 🎯 Benchmark Evaluation Example
+
+
