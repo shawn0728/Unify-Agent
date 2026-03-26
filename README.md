@@ -81,6 +81,18 @@ Starting from long-tail IP collection, we construct user instructions and Ground
 
 ---
 
-## 🎯 Benchmark Evaluation Example
+## 🎯 More details about Benchmark
 
+### Benchmark Construction
+
+Hierarchical category distribution of **FactIP** Bench, consisting of three major groups (Character, Scene, and Object) and 12 fine-grained subcategories. Category-wise comparison of different methods on FactIP Bench, where the radar chart presents the overall scores across all subcategories.
+
+![dataset](./images/construction.png)
+
+### Evaluation Example
+
+MLLM evaluation for Popovich drawing a play.
+
+
+![eval_example](./images/eval_1.png)
 
