@@ -114,3 +114,17 @@ An example of MLLM evaluation for Popovich drawing a play.
 
 ![eval_example](./images/eval_1.png)
 
+---
+
+
+## 🙌 Acknowledgements
+We thank the open-source community for the wonderful works of [Bagel](https://github.com/ByteDance-Seed/Bagel) that inspired this project.
+
+
+## 🚧 TODO
+
+All the code, benchmark, and checkpoints have entered the final approval stage. Stay tuned — once the approval process is complete, we will release them ASAP.
+
+## 📮 Contact
+
+For questions, feedback, or collaboration opportunities, feel free to reach out: csfufu0728@gmail.com
