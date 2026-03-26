@@ -89,9 +89,27 @@ Hierarchical category distribution of **FactIP** Bench, consisting of three majo
 
 ![dataset](./images/construction.png)
 
+The full benchmark contains three major categories and 12 fine-grained subcategories, totaling **2,462 prompts**.
+
+
+| Category | Subcategory | Description | Num |
+|---|---|---|---:|
+| **CHARACTER** | Animation | Animated characters, creatures, equipment, and iconic locations from anime and animated media. | 438 |
+| **CHARACTER** | Comic | Characters and visual elements originating from comic books and manga series. | 363 |
+| **CHARACTER** | Celebrity | Prominent figures across diverse domains, including scientists, political leaders, business executives, athletes, and entertainment personalities. | 300 |
+| **CHARACTER** | Game | Video game characters, weapons, equipment, and other in-game visual elements. | 272 |
+| **CHARACTER** | Mascot | Official mascots representing Olympic Games, regional events, and corporate brands. | 77 |
+| **CHARACTER** | Mythology | Universally recognized mythological narratives and legendary figures, e.g., Kuafu Chasing the Sun. | 50 |
+| **OBJECT** | Food | Cuisines, regional delicacies, desserts, and beverages with cultural significance. | 316 |
+| **OBJECT** | Cultural Relic / Art | National treasures, classical calligraphy, paintings, sculptures, and fine art pieces. | 126 |
+| **OBJECT** | Toy | Collectible figures, designer toys, and model kits with cultural relevance, e.g., Labubu. | 123 |
+| **OBJECT** | Animal / Plant | Individually notable animals and plants with distinct public recognition, e.g., Giant Panda Qizai. | 50 |
+| **SCENE** | Landmark | Renowned scenic spots, architectural landmarks, monuments, and heritage sites. | 297 |
+| **SCENE** | Festival / Celebration | Visual elements and symbols associated with well-known festivals and cultural celebrations. | 50 |
+
 ### Evaluation Example
 
-MLLM evaluation for Popovich drawing a play.
+An example of MLLM evaluation for Popovich drawing a play.
 
 
 ![eval_example](./images/eval_1.png)
