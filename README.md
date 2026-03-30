@@ -89,7 +89,7 @@ Hierarchical category distribution of **FactIP** Bench, consisting of three majo
 
 ![dataset](./images/construction.png)
 
-The full benchmark contains three major categories and 12 fine-grained subcategories, totaling **2,462 prompts**.
+The full benchmark contains three major categories and 12 fine-grained subcategories, totaling **2,462 prompts**. We will also release **500 prompts** from the full benchmark as a **test mini** subset, with the hierarchical category distribution (Character, Scene, Object and their 12 fine-grained subcategories) **strictly maintained in proportion** to the full FactIP Bench.
 
 
 | Category | Subcategory | Description | Num |
