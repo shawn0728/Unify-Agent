@@ -37,6 +37,11 @@ To evaluate this setting, the paper introduces **FactIP**, a benchmark covering 
 
 This work highlights a new paradigm for text-to-image generation: moving from **closed-book generation** to **open-book, agentic generation**, where models actively reason over external knowledge before synthesis.
 
+---
+
+## 🚧 TODO
+
+All the code, benchmark, and checkpoints have entered the final approval stage. Stay tuned — once the approval process is complete, we will release them **ASAP**.
 
 ---
 
@@ -125,9 +130,6 @@ An example of MLLM evaluation for Popovich drawing a play.
 We thank the open-source community for the wonderful works of [Bagel](https://github.com/ByteDance-Seed/Bagel) that inspired this project.
 
 
-## 🚧 TODO
-
-All the code, benchmark, and checkpoints have entered the final approval stage. Stay tuned — once the approval process is complete, we will release them ASAP.
 
 ## 📮 Contact
 
