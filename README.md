@@ -134,3 +134,27 @@ We thank the open-source community for the wonderful works of [Bagel](https://gi
 ## 📮 Contact
 
 For questions, feedback, or collaboration opportunities, feel free to reach out: csfufu0728@gmail.com
+
+## 📄Citation
+
+If you find our works useful for your research, please consider citing:
+```
+@article{chen2026unify,
+  title={Unify-Agent: A Unified Multimodal Agent for World-Grounded Image Synthesis},
+  author={Chen, Shuang and Shou, Quanxin and Chen, Hangting and Zhou, Yucheng and Feng, Kaituo and Hu, Wenbo and Zhang, Yi-Fan and Lin, Yunlong and Huang, Wenxuan and Song, Mingyang and others},
+  journal={arXiv preprint arXiv:2603.29620},
+  year={2026}
+}
+
+
+@article{feng2026gen,
+  title={Gen-Searcher: Reinforcing Agentic Search for Image Generation},
+  author={Feng, Kaituo and Zhang, Manyuan and Chen, Shuang and Lin, Yunlong and Fan, Kaixuan and Jiang, Yilei and Li, Hongyu and Zheng, Dian and Wang, Chenyang and Yue, Xiangyu},
+  journal={arXiv preprint arXiv:2603.28767},
+  year={2026}
+}
+```
+
+## ⭐️ Star HistoryMore actions
+
+[![Star History Chart](https://api.star-history.com/svg?repos=shawn0728/Unify-Agent&type=Date)](https://star-history.com/#shawn0728/Unify-Agent&Date)
