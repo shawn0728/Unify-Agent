@@ -125,6 +125,114 @@ An example of MLLM evaluation for Popovich drawing a play.
 
 
 
+## 🛠️ Installation
+
+```bash
+git clone https://github.com/shawn0728/Unify-Agent.git
+cd Unify-Agent
+pip install -r requirements.txt
+```
+
+> **Note:** [FlashAttention-2](https://github.com/Dao-AILab/flash-attention) is recommended but commented out in `requirements.txt`. Install it separately if your GPU supports it:
+> ```bash
+> pip install flash-attn --no-build-isolation
+> ```
+
+
+## 🏋️ SFT Training
+
+We provide a ready-to-use script for supervised fine-tuning (SFT) of the Unify-Agent model. The training is built on top of [Bagel](https://github.com/ByteDance-Seed/Bagel) and uses FSDP for distributed training with W&B logging.
+
+### Prerequisites
+
+| Requirement | Details |
+|---|---|
+| **GPU** | 8 × A100/H100 per node (80 GB recommended) |
+| **Python** | 3.10+ |
+| **PyTorch** | 2.5.1+ with CUDA support |
+| **Base Model** | [Bagel-7B-MoT](https://huggingface.co/ByteDance-Seed/Bagel-7B-MoT) checkpoint |
+| **ViT** | [SigLIP-SO400M](https://huggingface.co/google/siglip-so400m-patch14-384) (NaViT variant) checkpoint |
+
+### Quick Start
+
+**1. Set required environment variables:**
+
+```bash
+export WANDB_API_KEY="your_wandb_api_key"
+export RESUME_FROM="/path/to/Bagel-7B-MoT"
+export VIT_PATH="/path/to/siglip-so400m-14-980-flash-attn2-navit"
+```
+
+**2. Single-node training (8 GPUs):**
+
+```bash
+bash SFT/scripts/train.sh 1 0 127.0.0.1 29500
+```
+
+**3. Multi-node training (e.g., 4 nodes):**
+
+```bash
+# On each node, replace <node_rank> with 0, 1, 2, 3
+bash SFT/scripts/train.sh 4 <node_rank> <master_ip> 29500
+```
+
+### Script Usage
+
+```
+bash SFT/scripts/train.sh <nnodes> <node_rank> <master_addr> <master_port>
+```
+
+| Argument | Description |
+|---|---|
+| `nnodes` | Total number of nodes |
+| `node_rank` | Rank of the current node (0-indexed) |
+| `master_addr` | IP address of the rank-0 node |
+| `master_port` | Port for distributed rendezvous |
+
+
+### Key Environment Variables
+
+All training hyperparameters can be overridden via environment variables:
+
+| Variable | Default | Description |
+|---|---|---|
+| `RESUME_FROM` | *(required)* | Path to the base model checkpoint |
+| `VIT_PATH` | *(required)* | Path to the SigLIP ViT checkpoint |
+| `WANDB_API_KEY` | *(required)* | Weights & Biases API key |
+| `NPROC_PER_NODE` | `8` | Number of GPUs per node |
+| `RESULTS_DIR` | `./outputs/sft` | Directory for logs and metrics |
+| `CHECKPOINT_DIR` | `./outputs/sft` | Directory for saving checkpoints |
+| `WANDB_PROJECT` | `unify-agent-sft` | W&B project name |
+| `WANDB_NAME` | `sft_run` | W&B run name |
+| `NUM_WORKERS` | `1` | DataLoader workers per rank |
+| `KEEP_LAST_N` | `8` | Number of recent checkpoints to keep |
+| `LAUNCH_MODE` | `static` | Launch mode: `static` or `elastic` |
+| `COMM_PROFILE` | `socket_safe` | NCCL comm profile: `socket_safe` \| `ib_min` \| `ib_perf` |
+
+### Training Hyperparameters
+
+The default SFT recipe uses the following hyperparameters:
+
+| Hyperparameter | Value |
+|---|---|
+| Learning rate | `5e-5` |
+| Warmup steps | `500` |
+| Max gradient norm | `5.0` |
+| Expected tokens per batch | `40240` |
+| Max tokens per batch | `41520` |
+| Max tokens per sample | `40240` |
+| Save every N steps | `500` |
+| CE loss weight | `1.0` |
+| MSE loss weight | `1.0` |
+| Special token CE weight | `3.0` |
+
+### Dataset Configuration
+
+The SFT training uses a YAML config file to specify datasets. See [`SFT/data/configs/agent_data.yaml`](SFT/data/configs/agent_data.yaml) for the agentic SFT config and [`SFT/data/configs/example.yaml`](SFT/data/configs/example.yaml) for the general training config.
+
+For detailed information on data preparation, dataset format, and model/training configuration tables, refer to [`SFT/train/TRAIN.md`](SFT/train/TRAIN.md).
+
+
 ## 🚧 TODO
 
 All the code, benchmark, and checkpoints have entered the final approval stage. Stay tuned — once the approval process is complete, we will release them **ASAP**.
