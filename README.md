@@ -10,6 +10,8 @@
   [![Paper](https://img.shields.io/badge/paper-A42C25?style=for-the-badge&logo=arxiv&logoColor=white)](https://arxiv.org/abs/2603.29620)
   [![alphaXiv](https://img.shields.io/badge/discussion-A42C25?style=for-the-badge&logo=arxiv&logoColor=white&color=blue)](https://www.alphaxiv.org/abs/2603.29620)
   [![Github](https://img.shields.io/badge/Unify_Agent-000000?style=for-the-badge&logo=github&logoColor=000&logoColor=white)](https://github.com/shawn0728/Unify-Agent)
+  [![Hugging Face Collection](https://img.shields.io/badge/Unify_Agent_Collection-fcd022?style=for-the-badge&logo=huggingface&logoColor=000)](https://huggingface.co/collections/csfufu/unify-agent)
+  [![Twitter](https://img.shields.io/badge/Twitter-%23000000.svg?style=for-the-badge&logo=twitter&logoColor=white)](https://x.com/HuggingPapers/status/2040288191534543001)
 
   [![Awesome](https://awesome.re/badge.svg)](https://github.com/shawn0728/Unify-Agent)
   [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
