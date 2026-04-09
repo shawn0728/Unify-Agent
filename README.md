@@ -90,7 +90,7 @@ Starting from long-tail IP collection, we construct user instructions and Ground
 
 ---
 
-## 🎯 More details about Benchmark
+## 🎯 More details about FactIP Benchmark
 
 ### Benchmark Construction
 
