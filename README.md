@@ -233,6 +233,100 @@ The SFT training uses a YAML config file to specify datasets. See [`SFT/data/con
 For detailed information on data preparation, dataset format, and model/training configuration tables, refer to [`SFT/train/TRAIN.md`](SFT/train/TRAIN.md).
 
 
+## 📊 FactIP Benchmark Evaluation
+
+We provide the [**FactIP**](https://huggingface.co/datasets/csfufu/FactIP) benchmark for evaluating knowledge-grounded image generation. The evaluation pipeline consists of three stages: **Generate** → **Score** → **Calculate**.
+
+### Step 1: Download the FactIP Dataset
+
+```bash
+# Option A: HuggingFace CLI (recommended)
+huggingface-cli download csfufu/FactIP --repo-type dataset --local-dir ./FactIP
+
+# Option B: Git LFS
+git clone https://huggingface.co/datasets/csfufu/FactIP
+```
+
+The dataset contains prompts (`test.json` / `test_mini.json`), ground-truth reference images, and category metadata.
+
+### Step 2: Generate Images
+
+Use `eval/bagel_infer_batch.py` to generate images from the FactIP prompts:
+
+```bash
+python eval/bagel_infer_batch.py \
+    --model_path /path/to/your/model \
+    --prompt_json ./FactIP/test.json \
+    --output_dir ./results/my_model \
+    --num_gpus 8 \
+    --seed 42 \
+    --think  # optional: enable chain-of-thought reasoning
+```
+
+### Step 3: Score with MLLM Judge
+
+Score each generated image against the ground-truth references using an OpenAI-compatible multimodal API:
+
+```bash
+export OPENAI_API_KEY="your_api_key"
+
+python eval/score_factip.py \
+    --base-dir ./results/my_model \
+    --workers 8
+```
+
+You can customize the judge model via environment variable or CLI flag:
+
+```bash
+# Use a custom model
+export FACTIP_EVAL_MODEL="gpt-4o"
+
+# Point to ground-truth images (if stored separately)
+export FACTIP_GT_DIR="./FactIP/images"
+```
+
+### Step 4: Calculate Aggregate Scores
+
+Aggregate per-category and overall scores (reported on a **0–100 scale**):
+
+```bash
+python eval/calculate.py --base_dir ./results/my_model
+```
+
+This produces an `overall_score.txt` report with per-subtask breakdowns:
+
+```
+Overall = 0.05 × clarity + 0.10 × content_quality + 0.10 × aesthetics + 0.75 × text_relevance_ip
+```
+
+### One-Click Pipeline
+
+We also provide a single script that runs all three stages end-to-end:
+
+```bash
+bash eval/run_factip_eval.sh \
+    --model_path /path/to/your/model \
+    --prompt_json ./FactIP/test.json \
+    --gt_dir ./FactIP/images \
+    --output_dir ./results/my_model \
+    --num_gpus 8 \
+    --think
+```
+
+| Flag | Description |
+|---|---|
+| `--model_path` | Path to the model checkpoint |
+| `--prompt_json` | Path to the FactIP prompt JSON |
+| `--gt_dir` | Path to the ground-truth reference images |
+| `--output_dir` | Directory for generated images and scores |
+| `--num_gpus` | Number of GPUs for parallel generation (default: 8) |
+| `--think` | Enable chain-of-thought reasoning |
+| `--score_workers` | Concurrent API workers for scoring (default: 4) |
+| `--eval_model` | Override the MLLM judge model name |
+| `--skip_generate` | Skip generation, run scoring + calculation only |
+| `--only_calculate` | Skip generation and scoring, run calculation only |
+
+
 ## 🚧 TODO
 
 All the code, benchmark, and checkpoints have entered the final approval stage. Stay tuned — once the approval process is complete, we will release them **ASAP**.
