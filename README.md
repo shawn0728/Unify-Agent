@@ -275,7 +275,7 @@ export SERPER_API_KEY="..."
     "country": "Japan"
   },
   "1": {
-    "ip_name": "",
+    "ip_name": "Hotpot",
     "image_prompt": "A bowl of authentic Chongqing hotpot with rich red broth",
     "language": "zh",
     "country": "中国"
@@ -373,6 +373,50 @@ infer/
 └── data/
     └── data_utils.py               # Image preprocessing utilities
 ```
+
+---
+
+## 🗂️ Data Pipeline
+
+We provide a three-stage data pipeline that constructs multi-turn agentic search trajectories paired with generated images from a list of IP entries. This is used to produce the SFT training data described in the paper.
+
+```
+IP CSV / JSON  ─►  Stage 1  ─►  Stage 2  ─►  Stage 3  ─►  Training Data
+                  (Prompts)   (Trajectories)  (Images)
+```
+
+| Stage | Description |
+|-------|-------------|
+| **1 — Prompt Generation** | Uses an LLM to produce structured image-generation prompts from an IP list |
+| **2 — Trajectory Generation** | Conducts multi-turn agent dialogue with web search (Serper + Jina), image quality judging, and evidence-grounded recaption |
+| **3 — Image Generation** | Calls an image generation API using the recaption as the prompt |
+
+### Quick Start
+
+```bash
+export OPENAI_API_KEY="sk-..."
+export SERPER_API_KEY="..."
+
+bash data_pipeline/run_pipeline.sh \
+    --source_ip celebrity \
+    --ip_data data/ip_prompts.json \
+    --output_dir ./output/pipeline
+```
+
+### Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `OPENAI_API_KEY` | Yes | OpenAI-compatible API key |
+| `SERPER_API_KEY` | Yes (Stage 2) | [Serper](https://serper.dev) web & image search |
+| `JINA_API_KEY` | Optional | [Jina AI](https://jina.ai) full-page content extraction |
+| `OPENAI_BASE_URL` | Optional | Custom API endpoint |
+| `STAGE1_MODEL` | Optional | Stage 1 model (default: `gpt-4o`) |
+| `AGENT_REASONING_MODEL` | Optional | Stage 2 reasoning model (default: `gpt-4o`) |
+| `AGENT_MULTITURN_MODEL` | Optional | Stage 2 multi-turn model (default: `gpt-4o`) |
+| `IMAGE_GEN_MODEL` | Optional | Stage 3 image model (default: `gpt-image-1`) |
+
+For detailed documentation on each stage, CLI flags, output formats, and architecture, see [`data_pipeline/DATA.md`](data_pipeline/DATA.md).
 
 ---
 
