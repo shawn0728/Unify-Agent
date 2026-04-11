@@ -233,6 +233,149 @@ The SFT training uses a YAML config file to specify datasets. See [`SFT/data/con
 For detailed information on data preparation, dataset format, and model/training configuration tables, refer to [`SFT/train/TRAIN.md`](SFT/train/TRAIN.md).
 
 
+## 🚀 Inference
+
+Unify-Agent performs **multi-turn agentic inference**: given an input prompt and optional IP name, the model autonomously searches the web for textual and visual evidence, generates a grounded recaption, and synthesizes the final image. The inference pipeline has four stages:
+
+1. **Search Phase** — The model calls `text_search` and `search_image` tools in a multi-turn loop to gather background knowledge and reference images.
+2. **Quality Judging** — Downloaded images are scored by an LLM judge; the top-2 highest-quality references are selected.
+3. **Recaption** — Using the reference images and search results, the model generates a detailed, evidence-grounded scene description.
+4. **Image Generation** — The recaption and reference images are fed to the BAGEL generator to produce the final image.
+
+### Prerequisites
+
+| Requirement | Details |
+|---|---|
+| **GPU** | 1 × A100/H100 (80 GB) for single-GPU; N GPUs for multi-GPU mode |
+| **Model** | [csfufu/Unify-Agent](https://huggingface.co/csfufu/Unify-Agent) (auto-downloaded by default) |
+| **OPENAI_API_KEY** | Required when `--execute_tools` is enabled (for LLM reasoning & image judging) |
+| **SERPER_API_KEY** | Required when `--execute_tools` is enabled (for web search) |
+| **JINA_API_KEY** | Optional (for webpage content extraction; falls back to snippets if not set) |
+
+### Quick Start
+
+A unified entry script `infer/run_infer.sh` automatically dispatches to the single-GPU or multi-GPU backend based on `--num_gpus`.
+
+**1. Set API keys (required for tool-augmented search):**
+
+```bash
+export OPENAI_API_KEY="sk-..."
+export SERPER_API_KEY="..."
+# Optional: export JINA_API_KEY="..."
+```
+
+**2. Prepare input data** — a JSON file mapping IP indices to entries:
+
+```json
+{
+  "0": {
+    "ip_name": "Pikachu",
+    "image_prompt": "Pikachu surfing on a giant wave at sunset",
+    "language": "en",
+    "country": "Japan"
+  },
+  "1": {
+    "ip_name": "",
+    "image_prompt": "A bowl of authentic Chongqing hotpot with rich red broth",
+    "language": "zh",
+    "country": "中国"
+  }
+}
+```
+
+> When `ip_name` is empty, the model operates in **prompt-only mode** — it searches for background information based on the scene description directly.
+
+**3. Run inference:**
+
+```bash
+# Single-GPU inference with tool execution
+bash infer/run_infer.sh \
+    --ip_data path/to/ip_data.json \
+    --output_dir ./output/my_run \
+    --execute_tools \
+    --allow_batch_ip
+
+# Multi-GPU inference (4 GPUs)
+bash infer/run_infer.sh \
+    --ip_data path/to/ip_data.json \
+    --output_dir ./output/my_run \
+    --num_gpus 4 \
+    --execute_tools \
+    --allow_batch_ip
+```
+
+**4. Process a single IP entry:**
+
+```bash
+bash infer/run_infer.sh \
+    --ip_data path/to/ip_data.json \
+    --ip_index 0 \
+    --output_dir ./output/single_test \
+    --execute_tools
+```
+
+### Output Structure
+
+```
+output/my_run/
+├── 0_trajectory.json          # Full multi-turn dialogue trajectory
+├── 0_generated.png            # Final generated image
+├── intermediate/
+│   └── 0/
+│       ├── image_1.jpg        # Best reference image from search
+│       ├── image_2.jpg        # Second-best reference image
+│       └── tmp/               # All candidate images before filtering
+└── processing_summary.json    # Batch processing summary
+```
+
+### CLI Reference
+
+The following flags are accepted by `run_infer.sh` and forwarded to the underlying Python scripts:
+
+| Flag | Default | Description |
+|---|---|---|
+| `--model_path` | `csfufu/Unify-Agent` | Path or HuggingFace repo id of the model |
+| `--num_gpus` | `1` | Number of GPUs (`1` = single-GPU script, `>1` = multi-GPU script) |
+| `--ip_data` | *(required)* | IP data JSON file path |
+| `--ip_index` | `None` | Process only this IP index (processes all if not set) |
+| `--output_dir` | `None` | Output directory (or use `--output_base` + `--model_name`) |
+| `--execute_tools` | `False` | Enable web search and LLM judging (requires API keys) |
+| `--allow_batch_ip` | `False` | Allow batch processing when `--ip_index` is not specified |
+| `--per_ip_subdir` | `False` | Save each IP's output in a separate subdirectory |
+| `--reference_images` | `None` | Provide reference images directly (skip search phase) |
+| `--seed` | `42` | Random seed for reproducibility |
+| `--mode` | `1` | Model loading mode: `1` = full precision, `2` = NF4, `3` = INT8 |
+| `--max_search_turns` | `6` | Maximum turns for the search phase |
+| `--stage1_temperature` | `0.7` | Temperature for the initial search turn |
+| `--stage2_temperature` | `0.7` | Temperature for subsequent search turns |
+| `--enable_think` | `False` | Enable thinking mode (multi-GPU only) |
+
+### Environment Variables
+
+| Variable | Description |
+|---|---|
+| `OPENAI_API_KEY` | API key for the OpenAI-compatible reasoning model |
+| `OPENAI_BASE_URL` | Custom base URL for the reasoning API (optional) |
+| `AGENT_REASONING_MODEL` | Reasoning model name (default: `gpt-4o`) |
+| `SERPER_API_KEY` | API key for [Serper](https://serper.dev) web search |
+| `JINA_API_KEY` | API key for [Jina AI](https://jina.ai) webpage reading (optional) |
+
+### Code Structure
+
+```
+infer/
+├── run_infer.sh                    # Unified entry point (dispatches by --num_gpus)
+├── infer_utils.py                  # Shared utilities: API clients, search, image processing,
+│                                   #   prompt templates, text parsing (~1150 lines)
+├── unify-agent_infer.py            # Single-GPU inference (~860 lines)
+├── unify-agent_infer_thread.py     # Multi-GPU inference with parallelism (~1330 lines)
+├── model_loader.py                 # Model weight loading and Inferencer construction
+└── data/
+    └── data_utils.py               # Image preprocessing utilities
+```
+
+---
+
 ## 📊 FactIP Benchmark Evaluation
 
 We provide the [**FactIP**](https://huggingface.co/datasets/csfufu/FactIP) benchmark for evaluating knowledge-grounded image generation. The evaluation pipeline consists of three stages: **Generate** → **Score** → **Calculate**.
