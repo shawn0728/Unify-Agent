@@ -39,7 +39,44 @@ To evaluate this setting, the paper introduces **FactIP**, a benchmark covering 
 
 This work highlights a new paradigm for text-to-image generation: moving from **closed-book generation** to **open-book, agentic generation**, where models actively reason over external knowledge before synthesis.
 
+---
 
+## 🗺️ Overview
+
+This repository provides everything needed to **reproduce, fine-tune, and evaluate** Unify-Agent:
+
+| Component | Path | Description |
+|-----------|------|-------------|
+| **SFT Training** | [`SFT/`](SFT/) | Supervised fine-tuning scripts with FSDP, W&B logging, and multi-node support |
+| **Inference** | [`infer/`](infer/) | Multi-turn agentic inference with web search, image judging, recaption, and generation |
+| **Data Pipeline** | [`data_pipeline/`](data_pipeline/) | Three-stage pipeline to construct training trajectories (prompt → search trajectory → image) |
+| **Evaluation** | [`eval/`](eval/) | FactIP benchmark evaluation: generate, score with MLLM judge, and aggregate results |
+| **Model** | [csfufu/Unify-Agent](https://huggingface.co/csfufu/Unify-Agent) | Pre-trained checkpoint on HuggingFace |
+| **Benchmark** | [csfufu/FactIP](https://huggingface.co/datasets/csfufu/FactIP) | 2,462 knowledge-intensive prompts across 12 categories |
+
+### Workflow at a Glance
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        Unify-Agent                              │
+│                                                                 │
+│  ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐   │
+│  │  THINK   │───►│ RESEARCH │───►│RECAPTION │───►│ GENERATE │   │
+│  │          │    │          │    │          │    │          │   │
+│  │ Identify │    │  Search  │    │ Fuse ref │    │ Produce  │   │
+│  │ missing  │    │  text &  │    │ images + │    │ grounded │   │
+│  │knowledge │    │  images  │    │ evidence │    │  image   │   │
+│  └──────────┘    └──────────┘    └──────────┘    └──────────┘   │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Quick Links
+
+- **Get started** → [Installation](#%EF%B8%8F-installation)
+- **Train your own model** → [SFT Training](#%EF%B8%8F-sft-training)
+- **Run inference** → [Inference](#-inference)
+- **Build training data** → [Data Pipeline](#%EF%B8%8F-data-pipeline)
+- **Evaluate on FactIP** → [FactIP Benchmark Evaluation](#-factip-benchmark-evaluation)
 
 ---
 
